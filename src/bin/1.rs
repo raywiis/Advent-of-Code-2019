@@ -24,6 +24,6 @@ fn main() -> Result<()> {
     }
 
 
-    println!("Total fuel required: {}", fuel_sum);
+    println!("[Day 1] Total fuel cost: {}", fuel_sum);
     Ok(())
 }

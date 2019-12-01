@@ -3,3 +3,9 @@
 Solutions for the advent of code event for 2019.
 
 All written in rust
+
+Each solution can be run by typing
+
+```shell script
+cargo run --bin <problem day>
+```
