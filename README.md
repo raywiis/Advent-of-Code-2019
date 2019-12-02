@@ -6,6 +6,6 @@ All written in rust
 
 Each solution can be run by typing
 
-```shell script
+```sh
 cargo run --bin <problem day>
 ```
