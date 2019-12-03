@@ -6,8 +6,8 @@ fn main() -> Result<()> {
     let reader = BufReader::new(file);
     let start_state:Vec<u32> = reader.split(',' as u8)
         .map(|instruction| instruction.unwrap())
-        .map(|i| String::from_utf8(i).expect("Failed to parse string"))
-        .map(|i| i.parse::<u32>().expect("Failed to parse u8"))
+        .map(|i| String::from_utf8(i).unwrap())
+        .map(|i| i.parse::<u32>().unwrap())
         .collect();
 
     let mut memory = start_state.clone();
