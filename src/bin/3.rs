@@ -45,7 +45,7 @@ fn main() -> Result<()> {
     let min_dist = intercepts.iter()
         .map(|p| get_distance(&p, &Point(0, 0)))
         .fold(100000, |acc, x| min(acc, x));
-    println!("{}", min_dist);
+    println!("[Day 3] Closest point: {}", min_dist);
 
     let distances_1: Vec<i32> = intercepts.iter()
         .map(|p| distance_to(&path_1, &p))
@@ -60,7 +60,7 @@ fn main() -> Result<()> {
     let min_distance: i32 = distances_sum.iter()
         .fold(10000000, |acc, x| min(acc, *x));
 
-    println!("{:?}", min_distance);
+    println!("[Day 3] Closest signal: {}", min_distance);
 
     Ok(())
 }
@@ -154,14 +154,15 @@ mod tests {
 
     #[test]
     fn test_1() {
-        let intercept = get_interception(Point(-1, 0), Point(1, 0), Point(0, -1), Point(0, 1))
-            .expect("Fail");
-        assert_eq!(intercept, Point(0, 0))
+        let intercept = get_interception(
+            &Point(-1, 0), &Point(1, 0), &Point(0, -1), &Point(0, 1));
+        assert_eq!(intercept, Some(Point(0, 0)))
     }
 
     #[test]
     fn test_2() {
-        let intercept = get_interception(Point(-3, 0), Point(-2, 0), Point(0, -1), Point(0, 1));
+        let intercept = get_interception(
+            &Point(-3, 0), &Point(-2, 0), &Point(0, -1), &Point(0, 1));
         assert_eq!(intercept, None);
     }
 

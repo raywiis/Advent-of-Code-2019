@@ -10,7 +10,7 @@ fn main() {
         }
     }
 
-    println!("{} passwords fit", count);
+    println!("[Day 4] total passwords: {}", count);
 }
 
 fn verify_password(mut password: i32) -> bool {

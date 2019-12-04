@@ -65,17 +65,18 @@ fn parse_line(line: String) -> Vec<Point> {
 }
 
 fn find_interserction (a1: &Point, a2: &Point, b1: &Point, b2: &Point) -> Option<Point> {
-    if (a1.0 == a2.0 && b1.0 == b2.0) {
-        None
+    if a1.0 == a2.0 && b1.0 == b2.0 {
+        return None;
     }
-    if (a1.1 == a2.1 && b1.1 == b2.1) {
-        None
+    if a1.1 == a2.1 && b1.1 == b2.1 {
+        return None;
     }
 
-    if (a1.0 == a2.0) {
+    None
+    // if (a1.0 == a2.0) {
 
-    }
+    // }
 
     // There is an intersection
-    Some(Point(, ))
+    // Some(Point(, ))
 }
