@@ -17,16 +17,22 @@ fn main() -> Result<()> {
     // let line_1 = vec!("R75","D30","R83","U83","L12","D49","R71","U7","L72");
     // let line_2 = vec!("U62","R66","U55","R34","D71","R55","D58","R83");
 
+    // let line_1 = vec!("R98","U47","R26","D63","R33","U87","L62","D20","R33","U53","R51");
+    // let line_2 = vec!("U98","R91","D20","R16","D67","R40","U7","R15","U6","R7");
+
+    // let line_1 = vec!("R8","U5","L5","D3");
+    // let line_2 = vec!("U7","R6","D4","L4");
+
     let path_1 = make_path(line_1);
     let path_2 = make_path(line_2);
 
     let mut intercepts: Vec<Point> = Vec::new();
 
-    for i in 1..(path_1.len() - 1) {
+    for i in 1..(path_1.len()) {
         let a_1 = &path_1[i - 1];
         let a_2 = &path_1[i];
 
-        for j in 1..(path_2.len() - 1) {
+        for j in 1..(path_2.len()) {
             let b_1 = &path_2[j - 1];
             let b_2 = &path_2[j];
 
@@ -36,15 +42,25 @@ fn main() -> Result<()> {
         }
     }
 
-    println!("{:?}", path_1);
-    let min_dist = intercepts.into_iter()
+    let min_dist = intercepts.iter()
         .map(|p| get_distance(&p, &Point(0, 0)))
         .fold(100000, |acc, x| min(acc, x));
-
-    
-
     println!("{}", min_dist);
 
+    let distances_1: Vec<i32> = intercepts.iter()
+        .map(|p| distance_to(&path_1, &p))
+        .collect();
+    let distances_2: Vec<i32> = intercepts.iter()
+        .map(|p| distance_to(&path_2, &p))
+        .collect();
+    let distances_sum: Vec<i32> = distances_1.iter()
+        .zip(distances_2)
+        .map(|(a, b)| a + b)
+        .collect();
+    let min_distance: i32 = distances_sum.iter()
+        .fold(10000000, |acc, x| min(acc, *x));
+
+    println!("{:?}", min_distance);
 
     Ok(())
 }
@@ -53,47 +69,26 @@ fn get_distance(a: &Point, b: &Point) -> i32 {
     (a.0 - b.0).abs() + (a.1 - b.1).abs()
 }
 
-fn distance_to(path: Vec<Point>, target: Point) -> i32 {
-    let mut last_crossover = None;
-    let mut distance = 0;
+fn distance_to(path: &Vec<Point>, target: &Point) -> i32 {
+    let _crossover: Option<Point> = None;
+    let mut steps = 0;
 
-    for i in 1..(path.len() - 1) {
-        let start = path[i - 1];
-        let end = path[i];
+    for i in 1..(path.len()) {
+        let start = &path[i - 1];
+        let end = &path[i];
 
-        let cross = first_intercept(path, i);
-
-        // TODO: Figure out crossover mechanics
-
-        if point_intercepted(start, end, target) {
-            let distance = get_distance(start, end)
-            if let Some(point) = last_crossover {
-                return get_distance(start, b: &Point)
-            } else {
-                return get_distance(start, target);
-            }
+        if point_intercepted(&start, &end, &target) {
+            steps += get_distance(&start, &target);
+            // Assuming were not crossing self on last leg
+            return steps;
+        } else {
+            steps += get_distance(&start, &end)
         }
     }
+    steps
 }
 
-fn first_intercept(path: Vec<Point>, up_to: i32) -> Option<Point> {
-    let b1 = path[i - 1];
-    let b2 = path[i];
-
-    for i in 1..(path.len() - 1) {
-        let a1 = path[i - 1];
-        let a2 = path[i];
-
-        let cross = get_interception(a1, a2, b1, b2)
-
-        if let Some(intercept) == cross {
-            return cross;
-        }
-    }
-    None
-}
-
-fn point_intercepted(a: Point, b: Point, point: Point) {
+fn point_intercepted(a: &Point, b: &Point, point: &Point) -> bool {
     if a.0 == point.0 {
         clamps(min(a.1, b.1), max(a.1, b.1), point.1)
     } else if a.1 == point.1 {
