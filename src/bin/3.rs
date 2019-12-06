@@ -99,27 +99,32 @@ fn point_intercepted(a: &Point, b: &Point, point: &Point) -> bool {
 }
 
 fn make_path(turns: Vec<&str>) -> Vec<Point> {
-    let mut start = (0, 0);
-    let mut points: Vec<Point> = Vec::new();
-    points.push(Point(0, 0));
+    let mut points: Vec<Point> = vec!(Point(0, 0));
+
+    let mut x = 0;
+    let mut y = 0;
     for turn in turns {
         let (direction, length) = turn.split_at(1);
-        let len: i32 = length.parse().expect("Failed to parse distance");
+        let len: i32 = length.parse()
+            .expect("Failed to parse distance");
 
         match direction {
-            "R" => start.0 += len,
-            "L" => start.0 -= len,
-            "U" => start.1 += len,
-            "D" => start.1 -= len,
+            "R" => x += len,
+            "L" => x -= len,
+            "U" => y += len,
+            "D" => y -= len,
             _ => panic!("Unexpected direction")
         }
 
-        points.push(Point(start.0, start.1));
+        points.push(Point(x, y));
     };
+
     points
 }
 
-fn get_interception(a1: &Point, a2: &Point, b1: &Point, b2: &Point) -> Option<Point> {
+fn get_interception(
+    a1: &Point, a2: &Point, b1: &Point, b2: &Point
+) -> Option<Point> {
     let x_a_min = min(a1.0, a2.0);
     let y_a_min = min(a1.1, a2.1);
     let x_a_max = max(a1.0, a2.0);
