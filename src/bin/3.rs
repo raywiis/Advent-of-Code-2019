@@ -2,11 +2,11 @@ use std::io::{Result};
 use std::cmp::{min, max};
 
 #[derive(Debug)]
-struct Point(i32, i32);
+struct Point{ x: i32, y: i32 }
 
 impl PartialEq for Point {
     fn eq(&self, other: &Self) -> bool {
-        self.0 == other.0 && self.1 == other.1
+        self.x == other.x && self.y == other.y
     }
 }
 
@@ -43,8 +43,9 @@ fn main() -> Result<()> {
     }
 
     let min_dist = intercepts.iter()
-        .map(|p| get_distance(&p, &Point(0, 0)))
-        .fold(100000, |acc, x| min(acc, x));
+        .map(|p| get_distance(&p, &Point{ x: 0, y: 0 }))
+        .fold(std::i32::MAX, |acc, x| min(acc, x));
+
     println!("[Day 3] Closest point: {}", min_dist);
 
     let distances_1: Vec<i32> = intercepts.iter()
@@ -58,7 +59,7 @@ fn main() -> Result<()> {
         .map(|(a, b)| a + b)
         .collect();
     let min_distance: i32 = distances_sum.iter()
-        .fold(10000000, |acc, x| min(acc, *x));
+        .fold(std::i32::MAX, |acc, x| min(acc, *x));
 
     println!("[Day 3] Closest signal: {}", min_distance);
 
@@ -66,7 +67,7 @@ fn main() -> Result<()> {
 }
 
 fn get_distance(a: &Point, b: &Point) -> i32 {
-    (a.0 - b.0).abs() + (a.1 - b.1).abs()
+    (a.x - b.x).abs() + (a.y - b.y).abs()
 }
 
 fn distance_to(path: &Vec<Point>, target: &Point) -> i32 {
@@ -85,24 +86,26 @@ fn distance_to(path: &Vec<Point>, target: &Point) -> i32 {
             steps += get_distance(&start, &end)
         }
     }
+
     steps
 }
 
 fn point_intercepted(a: &Point, b: &Point, point: &Point) -> bool {
-    if a.0 == point.0 {
-        clamps(min(a.1, b.1), max(a.1, b.1), point.1)
-    } else if a.1 == point.1 {
-        clamps(min(a.0, b.0), max(a.0, b.0), point.0)
+    if a.x == point.x {
+        clamps(min(a.y, b.y), max(a.y, b.y), point.y)
+    } else if a.y == point.y {
+        clamps(min(a.x, b.x), max(a.x, b.x), point.x)
     } else {
         false
     }
 }
 
 fn make_path(turns: Vec<&str>) -> Vec<Point> {
-    let mut points: Vec<Point> = vec!(Point(0, 0));
-
     let mut x = 0;
     let mut y = 0;
+
+    let mut points: Vec<Point> = vec!(Point{ x, y });
+
     for turn in turns {
         let (direction, length) = turn.split_at(1);
         let len: i32 = length.parse()
@@ -116,7 +119,7 @@ fn make_path(turns: Vec<&str>) -> Vec<Point> {
             _ => panic!("Unexpected direction")
         }
 
-        points.push(Point(x, y));
+        points.push(Point{ x, y });
     };
 
     points
@@ -125,24 +128,24 @@ fn make_path(turns: Vec<&str>) -> Vec<Point> {
 fn get_interception(
     a1: &Point, a2: &Point, b1: &Point, b2: &Point
 ) -> Option<Point> {
-    let x_a_min = min(a1.0, a2.0);
-    let y_a_min = min(a1.1, a2.1);
-    let x_a_max = max(a1.0, a2.0);
-    let y_a_max = max(a1.1, a2.1);
+    let x_a_min = min(a1.x, a2.x);
+    let y_a_min = min(a1.y, a2.y);
+    let x_a_max = max(a1.x, a2.x);
+    let y_a_max = max(a1.y, a2.y);
 
-    let x_b_min = min(b1.0, b2.0);
-    let y_b_min = min(b1.1, b2.1);
-    let x_b_max = max(b1.0, b2.0);
-    let y_b_max = max(b1.1, b2.1);
+    let x_b_min = min(b1.x, b2.x);
+    let y_b_min = min(b1.y, b2.y);
+    let x_b_max = max(b1.x, b2.x);
+    let y_b_max = max(b1.y, b2.y);
 
     if clamps(x_a_min, x_a_max, x_b_min) &&
         clamps(y_b_min, y_b_max, y_a_min) {
-        return Some(Point(x_b_min, y_a_min));
+        return Some(Point{ x: x_b_min, y: y_a_min });
     }
 
     if clamps(x_b_min, x_b_max, x_a_min) &&
         clamps(y_a_min, y_a_max, y_b_min) {
-        return Some(Point(x_a_min, y_b_min));
+        return Some(Point{ x: x_a_min, y: y_b_min });
     }
 
     None
@@ -152,7 +155,6 @@ fn clamps(min: i32, max: i32, test: i32) -> bool {
     min < test && test < max
 }
 
-
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -160,15 +162,22 @@ mod tests {
     #[test]
     fn test_1() {
         let intercept = get_interception(
-            &Point(-1, 0), &Point(1, 0), &Point(0, -1), &Point(0, 1));
-        assert_eq!(intercept, Some(Point(0, 0)))
+            &Point{ x: -1, y: 0 },
+            &Point{ x: 1, y: 0 },
+            &Point{ x: 0, y: -1 },
+            &Point{ x: 0, y: 1 }
+        );
+        assert_eq!(intercept, Some(Point{ x: 0, y: 0 }));
     }
 
     #[test]
     fn test_2() {
         let intercept = get_interception(
-            &Point(-3, 0), &Point(-2, 0), &Point(0, -1), &Point(0, 1));
+            &Point{ x: -3, y: 0 },
+            &Point{ x: -2, y: 0 },
+            &Point{ x: 0, y: -1 },
+            &Point{ x: 0, y: 1 }
+        );
         assert_eq!(intercept, None);
     }
-
 }
