@@ -1102,11 +1102,11 @@ fn main() {
 
 fn get_path(
     map: &HashMap<String, Vec<String>>,
-    target: &String,
-    start: &String
+    target: &str,
+    start: &str
 ) -> Option<Vec<String>> {
     if target == start {
-        return Some(vec!(start.clone()));
+        return Some(vec!(start.to_string()));
     }
 
     if let Some(orbit_options) = map.get(start) {
@@ -1118,25 +1118,26 @@ fn get_path(
             })
             .map(|path_opt| path_opt.unwrap())
             .collect();
-        
+
         if let Some(tail) = paths.last_mut() {
-            let mut path = vec!(start.clone());
+            let mut path = vec!(start.to_string());
             path.append(tail);
             return Some(path);
         }
     }
+
     None
 }
 
 fn count_orbits(
     map: &HashMap<String, Vec<String>>,
-    start: &String,
+    start: &str,
     depth: i32
 ) -> i32 {
     if let Some(direct) = map.get(start) {
-        let indirect_count = direct.iter()
+        let indirect_count: i32 = direct.iter()
             .map(|o| count_orbits(map, o, depth + 1))
-            .fold(0, |acc, i| acc + i);
+            .sum();
         let direct_count = direct.iter()
             .fold(0, |acc, _| acc + depth + 1);
         indirect_count + direct_count
