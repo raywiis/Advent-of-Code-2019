@@ -1079,77 +1079,77 @@ fn main() {
     add_to_map(&mut map,"DQR".to_string(), "P29".to_string());
     add_to_map(&mut map,"89K".to_string(), "RHG".to_string());
 
-    let orbits = count_orbits(&"COM".to_string(), &map, 0);
-    println!("Orbits: {}", orbits);
+    let orbits = count_orbits(&map, &"COM".to_string(), 0);
+    println!("[Day 6] Total orbits: {}", orbits);
+    
+    let path_to_you = get_path(&map, &"YOU".to_string(), &"COM".to_string())
+        .unwrap();
+    let path_to_san = get_path(&map, &"SAN".to_string(), &"COM".to_string())
+        .unwrap();
 
-    // let path_to_you = find_path(&map, &"I".to_string(), &"COM".to_string()).unwrap();
-    // let path_to_san = find_path(&map, &"H".to_string(), &"COM".to_string()).unwrap();
-
-    let path_to_you = find_path(&map, &"YOU".to_string(), &"COM".to_string()).unwrap();
-    let path_to_san = find_path(&map, &"SAN".to_string(), &"COM".to_string()).unwrap();
-
-    // println!("pty {:?}", path_to_you);
-    // println!("pts {:?}", path_to_san);
-
-    for i in 0..(min(path_to_san.len(), path_to_you.len())) {
-        if path_to_you[i] == path_to_san[i] {
-            continue;
-        }
-
-        let you_tail = path_to_you.len() - i;
-        let san_tail = path_to_san.len() - i;
-
-        let total_tail = you_tail + san_tail - 2;
-        println!("Jumps required: {}", total_tail);
-
-        break;
+    let mut idx = 0;
+    let max_idx = min(path_to_you.len(), path_to_san.len()) - 1;
+    while path_to_you[idx] == path_to_san[idx] && idx < max_idx {
+        idx += 1;
     }
+
+    let tail_you = path_to_you.len() - idx;
+    let tail_san = path_to_san.len() - idx;
+    let tail_total = tail_you + tail_san - 2;
+
+    println!("[Day 6] Jumps required: {}", tail_total);
 }
 
-fn find_path(map: &HashMap<String, Vec<String>>, target: &String, start: &String) -> Option<Vec<String>> {
+fn get_path(
+    map: &HashMap<String, Vec<String>>,
+    target: &String,
+    start: &String
+) -> Option<Vec<String>> {
     if target == start {
         return Some(vec!(start.clone()));
-    } else {
-        let orbits = map.get(start);
-        if let Some(orbit_options) = orbits {
-            let mut paths: Vec<Vec<String>> = orbit_options.iter()
-                .map(|ns| find_path(map, target, ns))
-                .filter(|path_opt| match path_opt {
-                    Some(..) => true,
-                    None => false
-                })
-                .map(|path_opt| path_opt.unwrap())
-                .collect();
-            
-            // println!("at {} from {:?} to {:?}", start, orbit_options, paths);
+    }
 
-            match paths.last_mut() {
-                Some(path_tail) => {
-                    let mut path = vec!(start.clone());
-                    path.append(path_tail);
-                    return Some(path);
-                },
-                None => None
-            }
-        } else {
-            None
+    if let Some(orbit_options) = map.get(start) {
+        let mut paths: Vec<Vec<String>> = orbit_options.iter()
+            .map(|ns| get_path(map, target, ns))
+            .filter(|path_opt| match path_opt {
+                Some(..) => true,
+                None => false
+            })
+            .map(|path_opt| path_opt.unwrap())
+            .collect();
+        
+        if let Some(tail) = paths.last_mut() {
+            let mut path = vec!(start.clone());
+            path.append(tail);
+            return Some(path);
         }
     }
+    None
 }
 
-fn count_orbits(start: &String, map: &HashMap<String, Vec<String>>, depth: i32) -> i32 {
-    let orbs = map.get(start);
-    if let Some(direct_orbiters) = orbs {
-        let additional_orbits = direct_orbiters.iter()
-            .map(|o| count_orbits(o, map, depth + 1))
+fn count_orbits(
+    map: &HashMap<String, Vec<String>>,
+    start: &String,
+    depth: i32
+) -> i32 {
+    if let Some(direct) = map.get(start) {
+        let indirect_count = direct.iter()
+            .map(|o| count_orbits(map, o, depth + 1))
             .fold(0, |acc, i| acc + i);
-        return direct_orbiters.iter().fold(0, |acc, _| acc + depth + 1) + additional_orbits;
+        let direct_count = direct.iter()
+            .fold(0, |acc, _| acc + depth + 1);
+        indirect_count + direct_count
     } else {
-        return 0;
+        0
     }
 }
 
-fn add_to_map(map: &mut HashMap<String, Vec<String>>, key: String, val: String) {
+fn add_to_map(
+    map: &mut HashMap<String, Vec<String>>,
+    key: String,
+    val: String
+) {
     match map.get_mut(&key) {
         Some(orbits) => orbits.push(val),
         None => {map.insert(key, vec!(val));}
