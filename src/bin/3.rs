@@ -44,7 +44,7 @@ fn main() -> Result<()> {
 
     let min_dist = intercepts.iter()
         .map(|p| get_distance(&p, &Point{ x: 0, y: 0 }))
-        .fold(std::i32::MAX, |acc, x| min(acc, x));
+        .fold(std::i32::MAX, min);
 
     println!("[Day 3] Closest point: {}", min_dist);
 
@@ -70,7 +70,7 @@ fn get_distance(a: &Point, b: &Point) -> i32 {
     (a.x - b.x).abs() + (a.y - b.y).abs()
 }
 
-fn distance_to(path: &Vec<Point>, target: &Point) -> i32 {
+fn distance_to(path: &[Point], target: &Point) -> i32 {
     let _crossover: Option<Point> = None;
     let mut steps = 0;
 

@@ -63,14 +63,14 @@ fn match_mode(digit: i32) -> ParamMode {
     }
 }
 
-fn fetch(memory: &Vec<i32>, mode: ParamMode, arg: i32) -> i32 {
+fn fetch(memory: &[i32], mode: ParamMode, arg: i32) -> i32 {
     match mode {
         ParamMode::Position => memory[arg as usize],
         ParamMode::Immediate => arg
     }
 }
 
-fn run_intcode(memory: &mut Vec<i32>, inputs: &Vec<i32>, outputs: &mut Vec<i32>) {
+fn run_intcode(memory: &mut Vec<i32>, inputs: &[i32], outputs: &mut Vec<i32>) {
     let mut instruction_ptr = 0;
     let mut input_ptr = 0;
 

@@ -4,7 +4,7 @@ use std::fs::File;
 fn main() -> Result<()> {
     let file = File::open("res/2_1.txt")?;
     let reader = BufReader::new(file);
-    let start_state:Vec<u32> = reader.split(',' as u8)
+    let start_state:Vec<u32> = reader.split(b',')
         .map(|instruction| instruction.unwrap())
         .map(|i| String::from_utf8(i).unwrap())
         .map(|i| i.parse::<u32>().unwrap())
@@ -26,7 +26,7 @@ fn main() -> Result<()> {
 
         memory = run_intcode(memory);
 
-        if memory[0] != 19690720 {
+        if memory[0] != 19_690_720 {
             continue;
         }
 

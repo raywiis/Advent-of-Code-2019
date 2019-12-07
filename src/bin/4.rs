@@ -1,7 +1,7 @@
 
 fn main() {
-    let start = 145852;
-    let end = 616942;
+    let start = 145_852;
+    let end = 616_942;
 
     let mut count = 0;
     for i in start..end {
@@ -31,12 +31,10 @@ fn verify_password(mut password: i32) -> bool {
     for i in 1..6 {
         if digits[i - 1] == digits[i] {
             group += 1;
+        } else if group == 2 {
+            return true;
         } else {
-            if group == 2 {
-                return true;
-            } else {
-                group = 1;
-            }
+            group = 1;
         }
     }
     if group == 2 {
