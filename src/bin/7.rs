@@ -2,8 +2,6 @@ use advent_of_code_2019::intcode::{execute, ExitCode};
 use std::cmp::max;
 
 fn main() {
-    // let phase_vals = vec!(0, 1, 2, 3, 4);
-    let phase_vals = vec!(5, 6, 7, 8, 9);
     // let program = vec!(3,15,3,16,1002,16,10,16,1,16,15,15,4,15,99,0,0);
     // let program = vec!(3,23,3,24,1002,24,10,24,1002,23,-1,23,101,5,23,23,1,24,23,23,4,23,99,0,0);
     // let program = vec!(3,31,3,32,1002,32,10,32,1001,31,-2,31,1007,31,0,33,1002,33,7,33,1,33,31,31,1,32,31,31,4,31,99,0,0,0);
@@ -11,20 +9,25 @@ fn main() {
     // let program = vec!(3,26,1001,26,-4,26,3,27,1002,27,2,27,1,27,26,27,4,27,1001,28,-1,28,1005,28,6,99,0,0,5);
 
     let mut max_amp = 0;
-    let seq_perms = permutations(vec!(), phase_vals.clone());
+    let seq_perms = permutations(vec!(), vec!(0, 1, 2, 3, 4));
     for seq in seq_perms {
-        let amp_prom = feedback(&program, seq.clone());
-        max_amp = max(max_amp, amp_prom);
-        // let amp_prom = amplify(&program, &seq).1;
-        // let amp = amp_prom.last().unwrap();
-        // max_amp = max(*amp, max_amp);
+        let amp_prom = amplify(&program, &seq).1;
+        let amp = amp_prom.last().unwrap();
+        max_amp = max(*amp, max_amp);
     };
+    println!("[Day 7] Maximum amplification: {}", max_amp);
 
-    println!("{}", max_amp);
+    let mut max_fdb = 0;
+    let perms = permutations(vec!(), vec!(5, 6, 7, 8, 9));
+    for perm in perms {
+        let fdb = feedback(&program, perm.clone());
+        max_fdb = max(fdb, max_fdb);
+    }
+    println!("[Day 7] Best feedback: {}", max_fdb);
 }
 
 fn permutations(prefix: Vec<i32>, rest: Vec<i32>) -> Vec<Vec<i32>> {
-    if rest.len() == 0 {
+    if rest.is_empty() {
         return vec!(prefix);
     }
 
@@ -36,7 +39,7 @@ fn permutations(prefix: Vec<i32>, rest: Vec<i32>) -> Vec<Vec<i32>> {
 
         perm.push(add_elem);
 
-        for mut tail in permutations(perm.clone(), rest_copy) {
+        for tail in permutations(perm.clone(), rest_copy) {
             perms.push(tail);
         }
     }
@@ -44,12 +47,12 @@ fn permutations(prefix: Vec<i32>, rest: Vec<i32>) -> Vec<Vec<i32>> {
     perms
 }
 
-fn feedback(program: &Vec<i32>, phase_seq: Vec<i32>) -> i32 {
-    let mut outputs = vec!(0);
+fn feedback(program: &[i32], phase_seq: Vec<i32>) -> i32 {
+    let outputs = vec!(0);
     let mut tuple = (ExitCode::NoInput, outputs.clone());
     while tuple.0 != ExitCode::Ok {
         for phase in &phase_seq {
-            tuple = run_acs(program.clone(), *phase, &mut tuple.1.clone());
+            tuple = run_acs(program.to_vec(), *phase, &mut tuple.1.clone());
         }
         let mut orig = outputs.clone();
         orig.append(&mut tuple.1);
@@ -58,14 +61,12 @@ fn feedback(program: &Vec<i32>, phase_seq: Vec<i32>) -> i32 {
     *tuple.1.last().unwrap()
 }
 
-fn amplify(program: &Vec<i32>, phase_seq: &Vec<i32>) -> (ExitCode, Vec<i32>) {
-    let mut outputs = vec!(0);
-    let mut exit = ExitCode::Ok;
-    let mut tuple = (ExitCode::Ok, outputs);
+fn amplify(program: &[i32], phase_seq: &[i32]) -> (ExitCode, Vec<i32>) {
+    let mut tuple = (ExitCode::Ok, vec!(0));
     for phase in phase_seq {
-        tuple = run_acs(program.clone(), *phase, &mut tuple.1.clone());
+        tuple = run_acs(program.to_vec(), *phase, &mut tuple.1.clone());
     }
-    return tuple;
+    tuple
 }
 
 fn run_acs(mut memory: Vec<i32>, phase: i32, input: &mut Vec<i32>) -> (ExitCode, Vec<i32>) {
@@ -75,6 +76,5 @@ fn run_acs(mut memory: Vec<i32>, phase: i32, input: &mut Vec<i32>) -> (ExitCode,
 
     let exit = execute(&mut memory, &inputs, &mut outputs);
 
-    let tuple = (exit, outputs);
-    tuple
+    (exit, outputs)
 }
