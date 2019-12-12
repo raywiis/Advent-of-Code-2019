@@ -5,8 +5,8 @@ use std::cmp::{max, min};
 struct Robot {
     program: Vec<i64>,
     inputs: Vec<i64>,
-    position_x: i64,
-    position_y: i64,
+    x: i64,
+    y: i64,
     direction: i32,
     map: HashMap<(i64, i64), i32>,
     last_idx: usize
@@ -20,8 +20,8 @@ impl Robot {
         Robot{ 
             program,
             inputs,
-            position_x: 0,
-            position_y: 0,
+            x: 0,
+            y: 0,
             direction: 1,
             map,
             last_idx: 0
@@ -57,10 +57,7 @@ impl Robot {
     }
 
     fn get_color(&self) -> i64 {
-        let x = self.position_x;
-        let y = self.position_y;
-
-        match self.map.get(&(x, y)) {
+        match self.map.get(&(self.x, self.y)) {
             Some(color) => *color as i64,
             None => 0
         }
@@ -78,18 +75,16 @@ impl Robot {
 
     fn step(&mut self) {
         match self.direction {
-            0 => self.position_x -= 1,
-            1 => self.position_y += 1,
-            2 => self.position_x += 1,
-            3 => self.position_y -= 1,
+            0 => self.x -= 1,
+            1 => self.y += 1,
+            2 => self.x += 1,
+            3 => self.y -= 1,
             _ => panic!("Unexpected direction")
         }
     }
 
     fn paint(&mut self, color: i32) {
-        let x = self.position_x;
-        let y = self.position_y;
-        self.map.insert((x, y), color);
+        self.map.insert((self.x, self.y), color);
     }
 }
 
