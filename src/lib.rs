@@ -14,15 +14,14 @@ pub mod intcode {
         run_intcode(memory, inputs, outputs)
     }
 
-    #[derive(PartialEq)]
-    #[derive(Debug)]
+    #[derive(PartialEq, Debug)]
     pub enum ParamMode {
         Position,
         Immediate,
         Relative
     }
 
-    #[derive(PartialEq)]
+    #[derive(PartialEq, Debug)]
     pub enum ExitCode {
         Ok,
         NoInput
