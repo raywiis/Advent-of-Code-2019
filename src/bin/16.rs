@@ -58,7 +58,6 @@ fn fft(
     initial_list: Vec<i32>,
     pattern: Vec<i32>,
     phase_count: i32,
-    // len_mult: i32,
 ) -> Vec<i32> {
     let mut last_signal = initial_list;
     let mut signal = vec!();
@@ -69,12 +68,8 @@ fn fft(
             for j in i..last_signal.len() {
                 let pattern_idx = ((j + 1) / (i + 1)) % pattern.len();
                 value += (last_signal[j] * pattern[pattern_idx]) % 10;
-                // print!("{:2}", pattern[pattern_idx]);
-                // println!("+ {}", last_signal[j] * pattern[pattern_idx]);
             };
-            // println!("{}", i);
             signal.push(value.abs() % 10);
-            // println!("= {}, {}", value.abs() % 10, value);
         };
         last_signal = signal.clone();
         signal = vec!();
