@@ -11,15 +11,15 @@ fn main () {
     // let start = 293510;
     // let mut input_string = String::from("03081770884921959731165446850517");
     // let start = 308177;
-    println!("{}", input_string.len());
     let mut input_signal: Vec<i32> = input_string.chars()
         .map(|c| c.to_digit(10).unwrap() as i32)
         .collect();
     println!("parse complete");
 
     let phase_count = 100;
-    let result = fft(input_signal.clone(), vec!(0, 1, 0, -1), phase_count);
-    println!("{:?}", result);
+    let mut result = fft(input_signal.clone(), vec!(0, 1, 0, -1), phase_count);
+    result.truncate(8);
+    println!("Part 1 {:?}", result);
 
     input_string = input_string.repeat(10000);
     input_signal = input_string.chars()
